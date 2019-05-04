@@ -40,9 +40,9 @@ void preorder(No* raiz){
     if(raiz == NULL) ;
     else {
         if(raiz->cor == PRETO)
-    		printf("\x1b[30m[%d]\x1b[0m", raiz->valor);
+    		printf("[%dP]", raiz->valor);
         else
-    		printf("\x1b[31m[%d]\x1b[0m", raiz->valor);
+    		printf("[%dV]", raiz->valor);
         preorder(raiz->esq);
         preorder(raiz->dir);
     }
@@ -50,13 +50,11 @@ void preorder(No* raiz){
 
 No* criar_nulo(No* pai){
   No* nulo = (No*) malloc(sizeof(No));
-
   nulo->valor = -1;
   nulo->cor = DUPLO_PRETO;
   nulo->pai = pai;
   nulo->esq = NULL;
   nulo->dir = NULL;
-
   return nulo;
 }
 
@@ -111,7 +109,6 @@ void ajustar(No* no, No** raiz) {
         no->cor = PRETO;
         return;
     }
-
     if(cor(no->pai) == VERMELHO) {
         if(cor(tio(no)) == VERMELHO) {
             no->pai->cor = PRETO;
@@ -119,125 +116,29 @@ void ajustar(No* no, No** raiz) {
             no->pai->pai->cor = VERMELHO;
 
             ajustar(no->pai->pai, raiz);
-        }
-        else{
+        }else{
             if(eh_esquerdo(no) == 1 && eh_esquerdo(no->pai) == 1){
                 no->pai->pai->cor = VERMELHO;
                 no->pai->cor = PRETO;
-
                 rotacao_simples_direita(no->pai->pai, raiz);
-
                 return;
             }
             if(eh_esquerdo(no) == 1 && eh_esquerdo(no->pai) == 0){
                 rotacao_dupla_esquerda(no->pai->pai, raiz);
-
                 return;
             }
             if(eh_esquerdo(no) == 0 && eh_esquerdo(no->pai) == 0){
                 no->pai->pai->cor = VERMELHO;
                 no->pai->cor = PRETO;
-
                 rotacao_simples_esquerda(no->pai->pai, raiz);
-
                 return;
             }
             if(eh_esquerdo(no) == 0 && eh_esquerdo(no->pai) == 1){
                 rotacao_dupla_direita(no->pai->pai, raiz);
-
                 return;
             }
         }
     }
-}
-
-void reajustar(No* nulo,No** raiz){
-  if(eh_raiz(nulo) == 1){
-    *raiz = NULL;
-
-    free(nulo);
-
-    return;
-  }
-  if(cor(nulo->pai) == PRETO && cor(irmao(nulo)) == VERMELHO){
-    irmao(nulo)->cor = PRETO;
-    nulo->pai->cor = VERMELHO;
-
-    if(eh_esquerdo(nulo) == 1){
-        rotacao_simples_esquerda(nulo->pai, raiz);
-    }
-    else{
-        rotacao_simples_direita(nulo->pai, raiz);
-    }
-    reajustar(nulo, raiz);
-
-    return;
-  }
-  if(cor(nulo->pai) == PRETO && cor(irmao(nulo)) == PRETO && cor(irmao(nulo)->esq) == PRETO && cor(irmao(nulo)->dir) == PRETO){
-    irmao(nulo)->cor = VERMELHO;
-
-    reajustar(nulo, raiz);
-
-    return;
-  }
-  if(cor(nulo->pai) == VERMELHO && cor(irmao(nulo)) == PRETO && cor(irmao(nulo)->esq) == PRETO && cor(irmao(nulo)->dir) == PRETO){
-    irmao(nulo)->cor = VERMELHO;
-    nulo->pai->cor = PRETO;
-
-    if(eh_esquerdo(nulo) == 1){
-        nulo->pai->esq = NULL;
-    }
-    else{
-        nulo->pai->dir = NULL;
-    }
-    free(nulo);
-
-    return;
-  }
-  if(eh_esquerdo(nulo) == 1 && cor(irmao(nulo)) == PRETO && cor(irmao(nulo)->esq) == VERMELHO && cor(irmao(nulo)->dir) == PRETO){
-    irmao(nulo)->cor = VERMELHO;
-    irmao(nulo)->esq->cor = PRETO;
-
-    rotacao_simples_direita(irmao(nulo), raiz);
-
-    reajustar(nulo, raiz);
-
-    return;
-  }
-  if(eh_esquerdo(nulo) == 0 && cor(irmao(nulo)) == PRETO && cor(irmao(nulo)->dir) == VERMELHO && cor(irmao(nulo)->esq) == PRETO){
-    irmao(nulo)->cor = VERMELHO;
-    irmao(nulo)->dir->cor = PRETO;
-
-    rotacao_simples_esquerda(irmao(nulo), raiz);
-
-    reajustar(nulo, raiz);
-
-    return;
-  }
-  if(eh_esquerdo(nulo) == 1 && cor(irmao(nulo)) == PRETO && cor(irmao(nulo)->dir) == VERMELHO){
-    irmao(nulo)->cor = nulo->pai->cor;
-    irmao(nulo)->dir->cor = PRETO;
-    nulo->pai->cor = PRETO;
-    nulo->pai->esq = NULL;
-
-    rotacao_simples_esquerda(nulo->pai, raiz);
-
-    free(nulo);
-
-    return;
-  }
-  if(eh_esquerdo(nulo) == 0 && cor(irmao(nulo)) == PRETO && cor(irmao(nulo)->esq) == VERMELHO){
-    irmao(nulo)->cor = nulo->pai->cor;
-    irmao(nulo)->esq->cor = PRETO;
-    nulo->pai->cor = PRETO;
-    nulo->pai->dir = NULL;
-
-    rotacao_simples_direita(nulo->pai, raiz);
-
-    free(nulo);
-
-    return;
-  }
 }
 
 void rotacao_simples_direita(No* pivo, No **raiz){
@@ -308,7 +209,6 @@ void rotacao_dupla_esquerda(No *pivo,No **raiz){
 void remover(No** raiz,int valor){
   No* temp = (*raiz);
   No* no = NULL;
-
   while (temp != NULL) {
     no = temp;
     if(no->valor == valor){
@@ -316,79 +216,61 @@ void remover(No** raiz,int valor){
     }
     if(valor > temp->valor){
         temp = temp->dir;
-    }
-    else{
+    }else{
         temp = temp->esq;
     }
   }
-
-  if(no == NULL){
-        return;
+  if(temp == NULL){
+        return NULL;
   }
-
   if(cor(no) == VERMELHO){
     if(eh_esquerdo(no) == 1){
       if(no->dir == NULL){
         no->pai->esq = no->esq;
-
         if(no->esq != NULL){
           no->esq->pai = no->pai;
           no->esq->cor = no->cor;
         }
         free(no);
-
         return;
       }
       if(no->esq == NULL){
         no->pai->esq = no->dir;
         no->dir->pai = no->pai;
         no->dir->cor = no->cor;
-
         free(no);
-
         return;
       }
       else{
         No* m_esquerdo = maior_elemento(no->esq);
-
         no->valor = m_esquerdo->valor;
         m_esquerdo->valor = valor;
-
         remover(&(no->esq), valor);
-
         return;
       }
     }
     else{
       if(no->dir == NULL){
         no->pai->dir = no->esq;
-
         if(no->esq != NULL){
           no->esq->pai = no->pai;
           no->esq->cor = no->cor;
         }
-
         free(no);
-
         return;
       }
       if(no->esq == NULL){
         no->pai->dir = no->dir;
         no->dir->pai = no->pai;
         no->dir->cor = no->cor;
-
         free(no);
-
         return;
       }
       else{
         No* m_esquerdo = maior_elemento(no->esq);
-
         no->valor = m_esquerdo->valor;
         m_esquerdo->valor = valor;
-
         remover(&(no->esq), valor);
-
         return;
       }
     }
@@ -397,34 +279,22 @@ void remover(No** raiz,int valor){
     if(eh_raiz(no) == 1){
       if(no->dir == NULL && no->esq == NULL){
         No* nulo = criar_nulo(no->pai);
-
         *raiz = nulo;
-
         reajustar(nulo, raiz);
-
         free(no);
-
         return;
-      }
-      else{
+      }else{
         if(no->esq != NULL){
           No* m_esquerdo = maior_elemento(no->esq);
-
           no->valor = m_esquerdo->valor;
           m_esquerdo->valor = valor;
-
           remover(&(no->esq),valor);
-
           return;
-        }
-        else{
+        }else{
           No* m_direito = maior_elemento(no->dir);
-
           no->valor = m_direito->valor;
           m_direito->valor = valor;
-
           remover(&(no->dir),valor);
-
           return;
         }
       }
@@ -432,40 +302,29 @@ void remover(No** raiz,int valor){
     if(eh_esquerdo(no) == 1){
       if(no->dir == NULL && no->esq == NULL){
         No *nulo = criar_nulo(no->pai);
-
         no->pai->esq = nulo;
-
         reajustar(nulo,raiz);
 
         return;
       }
-      if(no->dir == NULL){
-        no->pai->esq = no->esq;
-        no->esq->cor = no->cor;
-        no->esq->pai = no->pai;
-
-        free(no);
-
-        return;
-      }
-      else{
-        no->pai->esq = no->dir;
+      if(no->dir == NULL && no->esq != NULL){
+            no->esq->cor = no->cor;
+            no->esq->pai = no->pai;
+            no->pai->esq = no->esq;
+            free(no);
+            return;
+      }else{
         no->dir->cor = no->cor;
-        no->esq->pai = no->pai;
-
+        no->dir->pai = no->pai;
+        no->pai->esq = no->dir;
         free(no);
-
         return;
       }
-    }
-    else{
+    }else{
       if(no->dir == NULL && no->esq == NULL){
         No *nulo = criar_nulo(no->pai);
-
         no->pai->dir = nulo;
-
         reajustar(nulo,raiz);
-
         return;
       }
       if(no->dir == NULL){
@@ -476,16 +335,101 @@ void remover(No** raiz,int valor){
         free(no);
 
         return;
-      }
-      else{
+      } else{
         no->pai->dir = no->dir;
         no->dir->cor = no->cor;
         no->dir->pai = no->pai;
-
         free(no);
-
         return;
       }
     }
   }
 }
+
+void reajustar(No* nulo,No** raiz){
+  if(eh_raiz(nulo) == 1){
+    *raiz = NULL;
+
+    free(nulo);
+
+    return;
+  }
+  if(cor(nulo->pai) == PRETO && cor(irmao(nulo)) == VERMELHO){
+    irmao(nulo)->cor = PRETO;
+    nulo->pai->cor = VERMELHO;
+
+    if(eh_esquerdo(nulo) == 1){
+        rotacao_simples_esquerda(nulo->pai, raiz);
+    }
+    else{
+        rotacao_simples_direita(nulo->pai, raiz);
+    }
+    reajustar(nulo, raiz);
+    return;
+  }
+  if(cor(nulo->pai) == PRETO && cor(irmao(nulo)) == PRETO && cor(irmao(nulo)->esq) == PRETO && cor(irmao(nulo)->dir) == PRETO){
+    irmao(nulo)->cor = VERMELHO;
+    reajustar(nulo, raiz);
+    return;
+  }
+  if(cor(nulo->pai) == VERMELHO && cor(irmao(nulo)) == PRETO && cor(irmao(nulo)->esq) == PRETO && cor(irmao(nulo)->dir) == PRETO){
+        if(irmao(nulo) != NULL){
+            irmao(nulo)->cor = VERMELHO;
+        }
+    nulo->pai->cor = PRETO;
+
+    if(eh_esquerdo(nulo) == 1){
+        nulo->pai->esq = NULL;
+    }
+    else{
+        nulo->pai->dir = NULL;
+    }
+    free(nulo);
+    return;
+  }
+  if(eh_esquerdo(nulo) == 1 && cor(irmao(nulo)) == PRETO && cor(irmao(nulo)->esq) == VERMELHO && cor(irmao(nulo)->dir) == PRETO){
+    irmao(nulo)->cor = VERMELHO;
+    irmao(nulo)->esq->cor = PRETO;
+
+    rotacao_simples_direita(irmao(nulo), raiz);
+
+    reajustar(nulo, raiz);
+
+    return;
+  }
+  if(eh_esquerdo(nulo) == 0 && cor(irmao(nulo)) == PRETO && cor(irmao(nulo)->dir) == VERMELHO && cor(irmao(nulo)->esq) == PRETO){
+    irmao(nulo)->cor = VERMELHO;
+    irmao(nulo)->dir->cor = PRETO;
+
+    rotacao_simples_esquerda(irmao(nulo), raiz);
+
+    reajustar(nulo, raiz);
+
+    return;
+  }
+  if(eh_esquerdo(nulo) == 1 && cor(irmao(nulo)) == PRETO && cor(irmao(nulo)->dir) == VERMELHO){
+    irmao(nulo)->cor = nulo->pai->cor;
+    irmao(nulo)->dir->cor = PRETO;
+    nulo->pai->cor = PRETO;
+    nulo->pai->esq = NULL;
+
+    rotacao_simples_esquerda(nulo->pai, raiz);
+
+    free(nulo);
+
+    return;
+  }
+  if(eh_esquerdo(nulo) == 0 && cor(irmao(nulo)) == PRETO && cor(irmao(nulo)->esq) == VERMELHO){
+    irmao(nulo)->cor = nulo->pai->cor;
+    irmao(nulo)->esq->cor = PRETO;
+    nulo->pai->cor = PRETO;
+    nulo->pai->dir = NULL;
+
+    rotacao_simples_direita(nulo->pai, raiz);
+
+    free(nulo);
+
+    return;
+  }
+}
+
